@@ -2,5 +2,7 @@
 
 based in go.uber.org/zap
 
-old logging library functions:
+## TODO
 
+- [ ] 日志着色
+- [ ] 结构体字段内存对齐
