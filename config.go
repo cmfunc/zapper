@@ -9,7 +9,6 @@ package zaper
 
 import (
 	"io"
-	"os"
 	"sync"
 	"time"
 
@@ -18,27 +17,18 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-type EnvType int
-
-const (
-	EnvLocal    EnvType = iota //本地环境
-	EnvLiantiao                //联调环境
-	EnvQA                      //QA环境
-	EnvPro                     //生产环境
-)
-
 // Config 日志包配置
 // TODO 注意结构体字段，内存对其
 type Config struct {
-	Env       EnvType       //int 当前环境
 	FileLevel zapcore.Level //int8 日志输出等级
 	LogFile   string        //string 日志文件位置
 }
 
 // NewConfig 初始化一个日志配置对象
-func NewConfig(loglevel zapcore.Level) *Config {
+func NewConfig(loglevel zapcore.Level, logFilePath string) *Config {
 	return &Config{
 		FileLevel: loglevel,
+		LogFile:   logFilePath,
 	}
 }
 
@@ -63,7 +53,9 @@ func newFileSyncer() io.Writer {
 	if err != nil {
 		panic(err)
 	}
+
 	return rl
+
 }
 
 // Init 初始化zaper包
@@ -72,39 +64,35 @@ func Init(cfg *Config) {
 		// init zapperCfg var
 		zaperCfg = cfg
 		// First, define our level-handling logic.
-		highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-			return lvl >= zap.ErrorLevel
-		})
-		lowPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-			return lvl < zap.ErrorLevel
-		})
-
 		filePriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 			return lvl >= zaperCfg.FileLevel
 		})
 
-		consoleDebugging := zapcore.Lock(os.Stdout)
-		consoleErrors := zapcore.Lock(os.Stderr)
+		fileSyncer := zapcore.AddSync(newFileSyncer())
+		fileEncoder := zapcore.NewJSONEncoder(newProductionEncoderConfig())
 
-		topicErrors := zapcore.AddSync(newFileSyncer())
-
-		fileEncoder := zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
-		consoleEncoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
-
-		cores := make([]zapcore.Core, 0)
-		cores = append(cores, zapcore.NewCore(fileEncoder, topicErrors, filePriority))
-		if zaperCfg.Env == EnvLocal {
-			cores = append(cores,
-				zapcore.NewCore(consoleEncoder, consoleErrors, highPriority),
-				zapcore.NewCore(consoleEncoder, consoleDebugging, lowPriority))
-		}
-
-		core := zapcore.NewTee(cores...)
-
-		logger = zap.New(core)
+		logger = zap.New(zapcore.NewCore(fileEncoder, fileSyncer, filePriority), 
+		zap.AddCaller())
 		// defer logger.Sync() 进程退出前调用
 
-		logger.Info("init zapper success", zap.Int8("return", 0))
+		logger.Info("init zaper success", zap.Int8("return", 0))
 
 	})
+}
+
+func newProductionEncoderConfig() zapcore.EncoderConfig {
+	return zapcore.EncoderConfig{
+		TimeKey:        "ts",
+		LevelKey:       "level",
+		NameKey:        "logger",
+		CallerKey:      "caller",
+		FunctionKey:    zapcore.OmitKey,
+		MessageKey:     "msg",
+		StacktraceKey:  "stacktrace",
+		LineEnding:     zapcore.DefaultLineEnding,
+		EncodeLevel:    zapcore.LowercaseLevelEncoder,
+		EncodeTime:     zapcore.EpochTimeEncoder,
+		EncodeDuration: zapcore.SecondsDurationEncoder,
+		EncodeCaller:   zapcore.ShortCallerEncoder,
+	}
 }

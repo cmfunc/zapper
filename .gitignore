@@ -16,3 +16,7 @@
 
 # vscode
 /.vscode
+
+# log file
+zap_*
+logging_*

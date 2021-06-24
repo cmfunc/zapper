@@ -7,27 +7,25 @@ import (
 	"go.uber.org/zap"
 )
 
-func LogMiddleware(h http.Handler) http.Handler{
+func LogMiddleware(h http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		newLogger:=warpReqFields(logger,r)
-		newLogger.Info("start handle a request")
-		
-		r.WithContext(context.WithValue(r.Context(), "logger",newLogger))
+		newLogger := wrapReqFields(logger, r)
 
-		h.ServeHTTP(w,r)
+		r.WithContext(context.WithValue(r.Context(), "logger", newLogger))
+
+		h.ServeHTTP(w, r)
 
 		newLogger.Info("finished handle a request")
 
 	})
-	
-	
+
 }
 
-func warpReqFields(logger *zap.Logger,r *http.Request) *zap.Logger {
+func wrapReqFields(logger *zap.Logger, r *http.Request) *zap.Logger {
 	// TODO 日志中间件，统计请求
-	urlQuery:=r.URL.Query()
+	urlQuery := r.URL.Query()
 	return logger.With(
 		zap.String("logid", urlQuery.Get("")),
 		zap.String("caller_ip", r.Header.Get("")),
