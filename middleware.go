@@ -11,7 +11,7 @@ func LogMiddleware(h http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		newLogger := wrapReqFields(logger, r)
+		newLogger := wrapReqFields(defaultLogger, r)
 
 		r.WithContext(context.WithValue(r.Context(), "logger", newLogger))
 
@@ -23,8 +23,8 @@ func LogMiddleware(h http.Handler) http.Handler {
 
 }
 
+// wrapReqFields 包裹请求携带的字段
 func wrapReqFields(logger *zap.Logger, r *http.Request) *zap.Logger {
-	// TODO 日志中间件，统计请求
 	urlQuery := r.URL.Query()
 	return logger.With(
 		zap.String("logid", urlQuery.Get("")),
