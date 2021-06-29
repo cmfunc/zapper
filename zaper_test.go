@@ -17,7 +17,7 @@ func TestAdvanceaper(t *testing.T) {
 }
 
 func BenchmarkZaperInfo(b *testing.B) {
-	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", "./zaper.log")
+	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", "./test.log")
 	defer logger.Sync()
 
 	for i := 0; i < b.N; i++ {
@@ -25,7 +25,7 @@ func BenchmarkZaperInfo(b *testing.B) {
 			zap.Int("int", 10),
 			zap.Error(errors.New("text string")),
 			zap.String("key string", "val string"),
-			zap.Time("timr", time.Now()),
+			zap.Time("time", time.Now()),
 		)
 	}
 

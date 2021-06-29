@@ -4,9 +4,6 @@
 package zaper
 
 import (
-	"time"
-
-	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -52,29 +49,16 @@ func NewBasicLogger(level zapcore.Level, product, module string, outputPath stri
 		panic(err)
 	}
 
-	logger.Info("logger construction succeeded")
 	return logger
 }
 
 // NewAdvancedLogger 高级配置方法，可自动切割日志
 func NewAdvancedLogger(level zapcore.Level, product, module string, outputPath string) *zap.Logger {
 
-	priority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool { return lvl < zapcore.ErrorLevel })
+	priority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool { return lvl >= level })
 
-	rl, err := rotatelogs.New(
-		outputPath+".%Y%m%d%H%M",
-		rotatelogs.WithClock(rotatelogs.UTC),
-		rotatelogs.WithRotationTime(time.Hour),
-		rotatelogs.WithMaxAge(-1),
-	)
-	if err != nil {
-		panic(err)
-	}
-
-	// consoleDebugging := zapcore.Lock(os.Stdout)
-	// consoleDebugging := zapcore.Lock(ioutil.Discard)
-
-	fileSyner := zapcore.AddSync(rl)
+	wr := NewFileWriter(outputPath)
+	syncer := zapcore.AddSync(wr) //ioutil.Discard
 
 	fileEncoder := zapcore.NewJSONEncoder(zapcore.EncoderConfig{
 		MessageKey:       "msg",
@@ -93,15 +77,13 @@ func NewAdvancedLogger(level zapcore.Level, product, module string, outputPath s
 		ConsoleSeparator: "\t",
 	})
 
-	core := zapcore.NewCore(fileEncoder, fileSyner, priority)
+	core := zapcore.NewCore(fileEncoder, syncer, priority)
 
-	// zap.AddCaller(), zap.AddStacktrace(level)
-	logger := zap.New(core).With(
+	logger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(level)).With(
 		zap.String("product", product),
 		zap.String("module", module),
 	)
 	// defer logger.Sync()
-	logger.Info("constructed a logger")
 	return logger
 }
 
@@ -112,7 +94,7 @@ const (
 	defaultFilePath = "./zaper.log"
 )
 
-var defaultLogger *zap.Logger = NewAdvancedLogger(defaultLevel, defaultProduct, defaultModule, defaultFilePath)
+var defaultLogger *zap.Logger = NewBasicLogger(defaultLevel, defaultProduct, defaultModule, defaultFilePath)
 
 func SetDefaultLogger(logger *zap.Logger) { defaultLogger = logger }
 
