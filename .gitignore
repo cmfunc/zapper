@@ -19,6 +19,4 @@
 
 # test log file
 /gocommons-develop-logging
-logging_benchmark*
 *.log*
-*.txt

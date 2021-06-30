@@ -2,6 +2,7 @@ package zaper
 
 import (
 	"errors"
+	"os"
 	"testing"
 	"time"
 
@@ -10,10 +11,10 @@ import (
 
 func TestNewFileWriter(t *testing.T) {
 	filepath := "./TestNewFileWriter.log"
-	w :=  NewFileWriter(filepath).File
+	w :=  NewFileWriter(filepath).Load()
 	
-	w.WriteString("shgkksk nj")
-	defer w.Close()
+	w.(*os.File).WriteString("shgkksk nj")
+	defer w.(*os.File).Close()
 }
 
 func TestCron(t *testing.T) {

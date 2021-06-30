@@ -1,0 +1,46 @@
+goos: darwin
+goarch: amd64
+pkg: zaper
+cpu: Intel(R) Core(TM) i5-8257U CPU @ 1.40GHz
+BenchmarkLoggingInfo-8   	  105282	     10251 ns/op	    2480 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	  106346	     10428 ns/op	    2477 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	  108076	     10244 ns/op	    2472 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	  106299	     11544 ns/op	    2477 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	  109544	     10562 ns/op	    2468 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	  112424	     10489 ns/op	    2460 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	  109261	     11258 ns/op	    2469 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	  111409	     10608 ns/op	    2463 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	  112736	      9907 ns/op	    2459 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	  116452	      9928 ns/op	    2450 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	  119442	      9815 ns/op	    2443 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	  117660	      9863 ns/op	    2447 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	  121089	      9723 ns/op	    2439 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	  119311	      9692 ns/op	    2443 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	  120259	      9774 ns/op	    2441 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   96427	     10770 ns/op	    2508 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	  121474	     10418 ns/op	    2438 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	  122242	     10158 ns/op	    2437 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   93302	     11573 ns/op	    2520 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   96902	     10901 ns/op	    2507 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   98833	     13339 ns/op	    2500 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   95073	     11925 ns/op	    2513 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	  100224	     12539 ns/op	    2496 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   81423	     14530 ns/op	    2571 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   78316	     16289 ns/op	    2587 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   78993	     17437 ns/op	    2584 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   72322	     14672 ns/op	    2622 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   70492	     16296 ns/op	    2634 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   68296	     15287 ns/op	    2649 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   61344	     21476 ns/op	    2703 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   71934	     15747 ns/op	    2624 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   66379	     16094 ns/op	    2662 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   69888	     16241 ns/op	    2638 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   72801	     14979 ns/op	    2619 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   69362	     16555 ns/op	    2641 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   70045	     16547 ns/op	    2636 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   71749	     16037 ns/op	    2625 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   66744	     19935 ns/op	    2660 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   71158	     15338 ns/op	    2629 B/op	      28 allocs/op
+BenchmarkLoggingInfo-8   	   69877	     15033 ns/op	    2638 B/op	      28 allocs/op
+PASS
+ok  	zaper	589.181s

@@ -1,0 +1,46 @@
+goos: darwin
+goarch: amd64
+pkg: zaper
+cpu: Intel(R) Core(TM) i5-8257U CPU @ 1.40GHz
+BenchmarkZaperInfo-8   	  115201	     10790 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  116934	     11466 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  117064	     10663 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  113251	     10066 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  116041	     10471 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  120367	     10622 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  103413	     10178 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  119187	     10177 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  121732	     10375 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  116104	     10307 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  116194	     10357 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  117483	     11725 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  108805	     10771 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	   95144	     12510 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	   92970	     12141 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  120762	     10749 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  107720	     10629 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  114728	     10529 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  119883	     11375 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  112677	     10378 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  119629	     11036 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  119992	     10523 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  106527	     10224 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  118908	     11072 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  106977	     10964 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  115288	     10733 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  117733	     10387 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  118171	     10105 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  121532	     10827 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  115838	     10423 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  118678	     10349 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  120514	     10417 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  119460	     11192 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  116719	     10588 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  112749	     10450 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  117741	     11725 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  113538	     10859 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  118482	     10623 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  118183	     11193 ns/op	     953 B/op	       7 allocs/op
+BenchmarkZaperInfo-8   	  108904	     10112 ns/op	     953 B/op	       7 allocs/op
+PASS
+ok  	zaper	56.573s
