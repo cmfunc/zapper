@@ -2,25 +2,16 @@ package zaper
 
 import (
 	"errors"
-	"os"
 	"testing"
 	"time"
 
 	"go.uber.org/zap"
 )
 
-func TestNewFileWriter(t *testing.T) {
-	filepath := "./TestNewFileWriter.log"
-	w :=  NewFileWriter(filepath).Load()
-	
-	w.(*os.File).WriteString("shgkksk nj")
-	defer w.(*os.File).Close()
-}
-
 func TestCron(t *testing.T) {
 	var filepath string = "./test_cron_rotate.log"
 
-	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", filepath)
+	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", filepath,time.Second*3)
 
 	syncLock := make(chan struct{}, 0)
 	go func() {

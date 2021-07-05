@@ -4,6 +4,8 @@
 package zaper
 
 import (
+	"time"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -53,11 +55,11 @@ func NewBasicLogger(level zapcore.Level, product, module string, outputPath stri
 }
 
 // NewAdvancedLogger 高级配置方法，可自动切割日志
-func NewAdvancedLogger(level zapcore.Level, product, module string, outputPath string) *zap.Logger {
+func NewAdvancedLogger(level zapcore.Level, product, module string, outputPath string, syncCycle time.Duration) *zap.Logger {
 
 	priority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool { return lvl >= level })
 
-	wr := NewFileWriter(outputPath)
+	wr := NewFileWriter(outputPath, syncCycle)
 	syncer := zapcore.AddSync(wr) //ioutil.Discard
 
 	fileEncoder := zapcore.NewJSONEncoder(zapcore.EncoderConfig{
@@ -103,11 +105,11 @@ func Debug(msg string, fields ...zap.Field) {
 }
 
 func Info(msg string, fields ...zap.Field) {
-	defaultLogger.Debug(msg, fields...)
+	defaultLogger.Info(msg, fields...)
 }
 
 func Warn(msg string, fields ...zap.Field) {
-	defaultLogger.Info(msg, fields...)
+	defaultLogger.Warn(msg, fields...)
 }
 
 func Error(msg string, fields ...zap.Field) {
