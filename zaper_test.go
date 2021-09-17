@@ -49,120 +49,45 @@ func TestDPanic(t *testing.T) {
 		zap.Time("time", time.Now()),
 	)
 }
-func TestPanic(t *testing.T) {
-	defaultLogger = NewAdvancedLogger(zap.DebugLevel, "product", "module", "./zaper.log",time.Second*3)
-	defer defaultLogger.Sync()
-	Panic("benchmark zap ",
-		zap.Int("int", 10),
-		zap.Error(errors.New("text string")),
-		zap.String("key string", "val string"),
-		zap.Time("time", time.Now()),
-	)
-}
-func TestFatal(t *testing.T) {
-	defaultLogger = NewAdvancedLogger(zap.DebugLevel, "product", "module", "./zaper.log",time.Second*3)
-	defer defaultLogger.Sync()
-	Fatal("benchmark zap ",
-		zap.Int("int", 10),
-		zap.Error(errors.New("text string")),
-		zap.String("key string", "val string"),
-		zap.Time("time", time.Now()),
-	)
-}
+// func TestPanic(t *testing.T) {
+// 	defaultLogger = NewAdvancedLogger(zap.DebugLevel, "product", "module", "./zaper.log",time.Second*3)
+// 	defer defaultLogger.Sync()
+// 	Panic("benchmark zap ",
+// 		zap.Int("int", 10),
+// 		zap.Error(errors.New("text string")),
+// 		zap.String("key string", "val string"),
+// 		zap.Time("time", time.Now()),
+// 	)
+// }
+// func TestFatal(t *testing.T) {
+// 	defaultLogger = NewAdvancedLogger(zap.DebugLevel, "product", "module", "./zaper.log",time.Second*3)
+// 	defer defaultLogger.Sync()
+// 	Fatal("benchmark zap ",
+// 		zap.Int("int", 10),
+// 		zap.Error(errors.New("text string")),
+// 		zap.String("key string", "val string"),
+// 		zap.Time("time", time.Now()),
+// 	)
+// }
 
-func TestAdvancedLoggerInfo(t *testing.T) {
+func TestSetDefaultLogger(t *testing.T) {
 	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", "./zaper.log",time.Second*3)
 	defer logger.Sync()
 	SetDefaultLogger(logger)
-	Debug("msg string", zap.Int("int", 10))
-	Warn("benchmark zap ",
-		zap.Int("int", 10),
-		zap.Error(errors.New("text string")),
-		zap.String("key string", "val string"),
-		zap.Time("time", time.Now()),
-	)
-	Error("benchmark zap ",
-		zap.Int("int", 10),
-		zap.Error(errors.New("text string")),
-		zap.String("key string", "val string"),
-		zap.Time("time", time.Now()),
-	)
+
 	Info("benchmark zap ",
 		zap.Int("int", 10),
 		zap.Error(errors.New("text string")),
 		zap.String("key string", "val string"),
 		zap.Time("time", time.Now()),
 	)
-	DPanic("benchmark zap ",
-		zap.Int("int", 10),
-		zap.Error(errors.New("text string")),
-		zap.String("key string", "val string"),
-		zap.Time("time", time.Now()),
-	)
-	Panic("benchmark zap ",
-		zap.Int("int", 10),
-		zap.Error(errors.New("text string")),
-		zap.String("key string", "val string"),
-		zap.Time("time", time.Now()),
-	)
-	Fatal("benchmark zap ",
-		zap.Int("int", 10),
-		zap.Error(errors.New("text string")),
-		zap.String("key string", "val string"),
-		zap.Time("time", time.Now()),
-	)
-
 	
-}
-
-func TestAdvancedDefaultLogger(t *testing.T) {
-	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", "./zaper.log",time.Second*3)
-	defer logger.Sync()
-
-	SetDefaultLogger(logger)
-	Debug("msg string", zap.Int("int", 10))
-	Warn("benchmark zap ",
-		zap.Int("int", 10),
-		zap.Error(errors.New("text string")),
-		zap.String("key string", "val string"),
-		zap.Time("time", time.Now()),
-	)
-	Error("benchmark zap ",
-		zap.Int("int", 10),
-		zap.Error(errors.New("text string")),
-		zap.String("key string", "val string"),
-		zap.Time("time", time.Now()),
-	)
-	Info("benchmark zap ",
-		zap.Int("int", 10),
-		zap.Error(errors.New("text string")),
-		zap.String("key string", "val string"),
-		zap.Time("time", time.Now()),
-	)
-	DPanic("benchmark zap ",
-		zap.Int("int", 10),
-		zap.Error(errors.New("text string")),
-		zap.String("key string", "val string"),
-		zap.Time("time", time.Now()),
-	)
-	Panic("benchmark zap ",
-		zap.Int("int", 10),
-		zap.Error(errors.New("text string")),
-		zap.String("key string", "val string"),
-		zap.Time("time", time.Now()),
-	)
-	Fatal("benchmark zap ",
-		zap.Int("int", 10),
-		zap.Error(errors.New("text string")),
-		zap.String("key string", "val string"),
-		zap.Time("time", time.Now()),
-	)
-
 }
 
 func TestAdvancedLogger(t *testing.T) {
 	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", "./zaper.log",time.Second*3)
 	defer logger.Sync()
+
 	logger.Debug("msg string", zap.Int("int", 10))
 	logger.Warn("benchmark zap ",
 		zap.Int("int", 10),
@@ -182,24 +107,13 @@ func TestAdvancedLogger(t *testing.T) {
 		zap.String("key string", "val string"),
 		zap.Time("time", time.Now()),
 	)
-	logger.DPanic("benchmark zap ",
+	DPanic("benchmark zap ",
 		zap.Int("int", 10),
 		zap.Error(errors.New("text string")),
 		zap.String("key string", "val string"),
 		zap.Time("time", time.Now()),
 	)
-	logger.Panic("benchmark zap ",
-		zap.Int("int", 10),
-		zap.Error(errors.New("text string")),
-		zap.String("key string", "val string"),
-		zap.Time("time", time.Now()),
-	)
-	logger.Fatal("benchmark zap ",
-		zap.Int("int", 10),
-		zap.Error(errors.New("text string")),
-		zap.String("key string", "val string"),
-		zap.Time("time", time.Now()),
-	)
+
 }
 
 func BenchmarkZaperInfo(b *testing.B) {
