@@ -1,4 +1,4 @@
-package zaper
+package zapper
 
 import (
 	"context"

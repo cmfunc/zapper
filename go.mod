@@ -1,4 +1,4 @@
-module zaper
+module zapper
 
 go 1.14
 

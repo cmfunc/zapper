@@ -1,4 +1,4 @@
-package zaper
+package zapper
 
 import (
 	"errors"
@@ -6,10 +6,15 @@ import (
 	"time"
 
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 func TestDebug(t *testing.T) {
-	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", "./zaper.log",time.Second*3)
+	syncCycle := time.Hour
+	wr := NewFileWriter("./test.log", syncCycle)
+	syncer := zapcore.AddSync(wr) //ioutil.Discard
+
+	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", syncer)
 	SetDefaultLogger(logger)
 	defer defaultLogger.Sync()
 	Debug("benchmark zap ",
@@ -20,7 +25,13 @@ func TestDebug(t *testing.T) {
 	)
 }
 func TestInfo(t *testing.T) {
-	defaultLogger = NewAdvancedLogger(zap.DebugLevel, "product", "module", "./zaper.log",time.Second*3)
+	syncCycle := time.Hour
+	wr := NewFileWriter("./test.log", syncCycle)
+	syncer := zapcore.AddSync(wr) //ioutil.Discard
+
+	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", syncer)
+	SetDefaultLogger(logger)
+
 	defer defaultLogger.Sync()
 	Info("benchmark zap ",
 		zap.Int("int", 10),
@@ -30,7 +41,13 @@ func TestInfo(t *testing.T) {
 	)
 }
 func TestWarn(t *testing.T) {
-	defaultLogger = NewAdvancedLogger(zap.DebugLevel, "product", "module", "./zaper.log",time.Second*3)
+	syncCycle := time.Hour
+	wr := NewFileWriter("./test.log", syncCycle)
+	syncer := zapcore.AddSync(wr) //ioutil.Discard
+
+	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", syncer)
+	SetDefaultLogger(logger)
+
 	defer defaultLogger.Sync()
 	Warn("benchmark zap ",
 		zap.Int("int", 10),
@@ -40,7 +57,13 @@ func TestWarn(t *testing.T) {
 	)
 }
 func TestDPanic(t *testing.T) {
-	defaultLogger = NewAdvancedLogger(zap.DebugLevel, "product", "module", "./zaper.log",time.Second*3)
+	syncCycle := time.Hour
+	wr := NewFileWriter("./test.log", syncCycle)
+	syncer := zapcore.AddSync(wr) //ioutil.Discard
+
+	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", syncer)
+	SetDefaultLogger(logger)
+
 	defer defaultLogger.Sync()
 	DPanic("benchmark zap ",
 		zap.Int("int", 10),
@@ -71,7 +94,11 @@ func TestDPanic(t *testing.T) {
 // }
 
 func TestSetDefaultLogger(t *testing.T) {
-	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", "./zaper.log",time.Second*3)
+	syncCycle := time.Hour
+	wr := NewFileWriter("./test.log", syncCycle)
+	syncer := zapcore.AddSync(wr) //ioutil.Discard
+
+	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", syncer)
 	defer logger.Sync()
 	SetDefaultLogger(logger)
 
@@ -85,7 +112,11 @@ func TestSetDefaultLogger(t *testing.T) {
 }
 
 func TestAdvancedLogger(t *testing.T) {
-	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", "./zaper.log",time.Second*3)
+	syncCycle := time.Hour
+	wr := NewFileWriter("./test.log", syncCycle)
+	syncer := zapcore.AddSync(wr) //ioutil.Discard
+
+	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", syncer)
 	defer logger.Sync()
 
 	logger.Debug("msg string", zap.Int("int", 10))
@@ -117,7 +148,11 @@ func TestAdvancedLogger(t *testing.T) {
 }
 
 func BenchmarkZaperInfo(b *testing.B) {
-	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", "./test.log",time.Hour*1)
+	syncCycle := time.Hour
+	wr := NewFileWriter("./test.log", syncCycle)
+	syncer := zapcore.AddSync(wr) //ioutil.Discard
+
+	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", syncer)
 	defer logger.Sync()
 
 	for i := 0; i < b.N; i++ {
