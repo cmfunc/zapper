@@ -1,5 +1,5 @@
 // zaper
-// !!! forbidden use zap.Suger
+// !!! forbidden to use zap.Suger
 // main goroutine with graceful exit ,logger.Sync() and corn.Stop()
 package zapper
 

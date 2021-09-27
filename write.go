@@ -42,9 +42,12 @@ func NewFileWriter(filepath string, tk time.Duration) (fw *FileWriter) {
 			f, _ := os.Create(file)
 			// ReciveNewFile accept new *os.File
 			// with a lock by channel
-			oldWiter := <-fw.ch
-			oldWiter.Sync()
-			oldWiter.Close()
+			oldFile := <-fw.ch
+
+			go func() {
+				oldFile.Sync()
+				oldFile.Close()
+			}()
 
 			fw.ch <- f
 		}

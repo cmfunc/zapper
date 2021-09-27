@@ -1,6 +1,8 @@
-# zaper
+# zapper
 
 based in go.uber.org/zap
+
+zapper is implement of io.Writer and simply config.
 
 ## TODO
 
