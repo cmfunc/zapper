@@ -12,6 +12,7 @@ type Writer struct {
 	nextTheTime time.Time
 	filepath    string
 	tk          time.Duration
+	tkStop      chan struct{}
 }
 
 func NewWriter(filepath string, tk time.Duration, cacheMax int64) (w *Writer) {
@@ -33,10 +34,11 @@ func NewWriter(filepath string, tk time.Duration, cacheMax int64) (w *Writer) {
 		nextTheTime: firstTheHour,
 		filepath:    filepath,
 		tk:          tk,
+		tkStop:      make(chan struct{}),
 	}
 
 	go w.run()
-	go w.notice()
+	go w.rotate()
 
 	return
 }
@@ -47,10 +49,22 @@ func (w Writer) Write(p []byte) (n int, err error) {
 	return
 }
 
+// 必须在srv.ShutDown()后调用，避免向关闭的通道中发送数据而panic
+func (w Writer) Close() (err error) {
+	close(w.buf)
+	return
+}
+
 func (w Writer) run() {
 	for {
 		select {
-		case b := <-w.buf:
+		case b, ok := <-w.buf:
+			if !ok {
+				w.f.Sync()
+				w.f.Close()
+				w.tkStop <- struct{}{}
+				return
+			}
 			w.f.Write(b)
 		case <-w.signal:
 			w.f.Sync()
@@ -62,15 +76,18 @@ func (w Writer) run() {
 	}
 }
 
-func (w Writer) notice() {
+func (w Writer) rotate() {
 	for {
-
 		t := time.NewTimer(w.nextTheTime.Sub(time.Now()))
-		<-t.C
-		// change nextTheTime
-		w.nextTheTime = nextTheTime(w.nextTheTime, w.tk)
-		// it's about time to repalce os.File.
-		w.signal <- struct{}{}
+		select {
+		case <-w.tkStop:
+			return
+		case <-t.C:
+			// change nextTheTime
+			w.nextTheTime = nextTheTime(w.nextTheTime, w.tk)
+			// it's about time to repalce os.File.
+			w.signal <- struct{}{}
+		}
 
 	}
 }
