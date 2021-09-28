@@ -58,7 +58,7 @@ func NewFileWriter(filepath string, tk time.Duration) (fw *FileWriter) {
 
 func genLogFilepath(filepath string, nextTheTime time.Time) string {
 	fileSlice := strings.Split(filepath, ".")
-	return strings.Join([]string{fileSlice[0], nextTheTime.Format("2006 15:04:05"), ".log"}, "")
+	return strings.Join([]string{fileSlice[0], nextTheTime.Format("2006-01-02 15:04:05"), ".log"}, "")
 }
 
 func nextTheTime(t time.Time, tk time.Duration) time.Time {

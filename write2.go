@@ -60,9 +60,9 @@ func (w Writer) run() {
 		select {
 		case b, ok := <-w.buf:
 			if !ok {
+				w.tkStop <- struct{}{}
 				w.f.Sync()
 				w.f.Close()
-				w.tkStop <- struct{}{}
 				return
 			}
 			w.f.Write(b)
