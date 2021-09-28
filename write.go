@@ -44,10 +44,11 @@ func NewFileWriter(filepath string, tk time.Duration) (fw *FileWriter) {
 			// with a lock by channel
 			oldFile := <-fw.ch
 
-			go func() {
-				oldFile.Sync()
-				oldFile.Close()
-			}()
+			go func(f *os.File) {
+				// TODO: 控制goroutine的生命周期,logger.Close时,必须等待goroutine关闭;
+				f.Sync()
+				f.Close()
+			}(oldFile)
 
 			fw.ch <- f
 		}
