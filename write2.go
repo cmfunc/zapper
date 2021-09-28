@@ -14,7 +14,7 @@ type Writer struct {
 	tk          time.Duration
 }
 
-func NewWriter(filepath string, tk time.Duration) (w *Writer) {
+func NewWriter(filepath string, tk time.Duration, cacheMax int64) (w *Writer) {
 	firstTheHour := nextTheTime(time.Now(), tk)
 	firstFile := genLogFilepath(filepath, firstTheHour)
 	f, err := os.Create(firstFile)
@@ -22,8 +22,12 @@ func NewWriter(filepath string, tk time.Duration) (w *Writer) {
 		panic(err)
 	}
 
+	if cacheMax == 0 {
+		cacheMax = 1024
+	}
+
 	w = &Writer{
-		buf:         make(chan []byte, 10240),
+		buf:         make(chan []byte, cacheMax),
 		signal:      make(chan struct{}),
 		f:           f,
 		nextTheTime: firstTheHour,
@@ -34,7 +38,7 @@ func NewWriter(filepath string, tk time.Duration) (w *Writer) {
 	go w.run()
 	go w.notice()
 
-	return 
+	return
 }
 
 func (w Writer) Write(p []byte) (n int, err error) {
