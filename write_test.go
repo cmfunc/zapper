@@ -2,6 +2,7 @@ package zapper
 
 import (
 	"errors"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -9,20 +10,21 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func TestCron(t *testing.T) {
-	var filepath string = "./test_cron_rotate.log"
+func TestNewWriter(t *testing.T) {
+	var filepath string = "/Users/yymt/Documents/zaper/test_cron_rotate.log"
 
-	syncCycle := time.Hour
-	wr := NewFileWriter(filepath, syncCycle)
+	syncCycle := time.Minute
+	wr := NewWriter(filepath, syncCycle, 1024)
 	syncer := zapcore.AddSync(wr) //ioutil.Discard
 
 	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", syncer)
+	SetDefaultLogger(logger)
 
 	syncLock := make(chan struct{}, 0)
 	go func() {
-		for i := 0; i <= 180; i++ {
+		for i := 0; i <= 240; i++ {
 
-			logger.Error("test cron zaper ",
+			Error("test cron zaper ",
 				zap.Int("int", 10),
 				zap.Error(errors.New("text string")),
 				zap.String("key string", "val string"),
@@ -39,4 +41,12 @@ func TestCron(t *testing.T) {
 
 	<-syncLock
 
+}
+
+func TestAbs(t *testing.T)  {
+	s:="2021-10-09 15:00:00.log"
+	if !filepath.IsAbs(s){
+		f,e:=filepath.Abs(s)
+		println(f,e)
+	}
 }

@@ -11,7 +11,7 @@ import (
 
 func TestDebug(t *testing.T) {
 	syncCycle := time.Hour
-	wr := NewFileWriter("./test.log", syncCycle)
+	wr := NewWriter("/Users/yymt/Documents/zaper/test.log", syncCycle, 0)
 	syncer := zapcore.AddSync(wr) //ioutil.Discard
 
 	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", syncer)
@@ -26,7 +26,7 @@ func TestDebug(t *testing.T) {
 }
 func TestInfo(t *testing.T) {
 	syncCycle := time.Hour
-	wr := NewFileWriter("./test.log", syncCycle)
+	wr := NewWriter("/Users/yymt/Documents/zaper/test.log", syncCycle,0)
 	syncer := zapcore.AddSync(wr) //ioutil.Discard
 
 	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", syncer)
@@ -42,7 +42,7 @@ func TestInfo(t *testing.T) {
 }
 func TestWarn(t *testing.T) {
 	syncCycle := time.Hour
-	wr := NewFileWriter("./test.log", syncCycle)
+	wr := NewWriter("/Users/yymt/Documents/zaper/test.log", syncCycle,0)
 	syncer := zapcore.AddSync(wr) //ioutil.Discard
 
 	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", syncer)
@@ -58,7 +58,7 @@ func TestWarn(t *testing.T) {
 }
 func TestDPanic(t *testing.T) {
 	syncCycle := time.Hour
-	wr := NewFileWriter("./test.log", syncCycle)
+	wr := NewWriter("/Users/yymt/Documents/zaper/test.log", syncCycle,0)
 	syncer := zapcore.AddSync(wr) //ioutil.Discard
 
 	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", syncer)
@@ -72,6 +72,7 @@ func TestDPanic(t *testing.T) {
 		zap.Time("time", time.Now()),
 	)
 }
+
 // func TestPanic(t *testing.T) {
 // 	defaultLogger = NewAdvancedLogger(zap.DebugLevel, "product", "module", "./zaper.log",time.Second*3)
 // 	defer defaultLogger.Sync()
@@ -95,7 +96,7 @@ func TestDPanic(t *testing.T) {
 
 func TestSetDefaultLogger(t *testing.T) {
 	syncCycle := time.Hour
-	wr := NewFileWriter("./test.log", syncCycle)
+	wr := NewWriter("/Users/yymt/Documents/zaper/test.log", syncCycle,0)
 	syncer := zapcore.AddSync(wr) //ioutil.Discard
 
 	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", syncer)
@@ -108,12 +109,12 @@ func TestSetDefaultLogger(t *testing.T) {
 		zap.String("key string", "val string"),
 		zap.Time("time", time.Now()),
 	)
-	
+
 }
 
 func TestAdvancedLogger(t *testing.T) {
 	syncCycle := time.Hour
-	wr := NewFileWriter("./test.log", syncCycle)
+	wr := NewWriter("/Users/yymt/Documents/zaper/test.log", syncCycle,0)
 	syncer := zapcore.AddSync(wr) //ioutil.Discard
 
 	logger := NewAdvancedLogger(zap.DebugLevel, "product", "module", syncer)
