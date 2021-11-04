@@ -22,7 +22,7 @@ func TestNewWriter(t *testing.T) {
 
 	syncLock := make(chan struct{}, 0)
 	go func() {
-		for i := 0; i <= 240; i++ {
+		for i := 0; i <= 65; i++ {
 
 			Error("test cron zaper ",
 				zap.Int("int", 10),
@@ -37,7 +37,7 @@ func TestNewWriter(t *testing.T) {
 		}
 
 		time.Sleep(time.Second * 20)
-		logger.Sync()
+		Sync()
 		syncLock <- struct{}{}
 	}()
 

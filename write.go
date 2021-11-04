@@ -8,6 +8,10 @@ import (
 	"time"
 )
 
+var defaultWriter *Writer
+
+func SetDefaultWriter(w *Writer) { defaultWriter = w }
+
 type Writer struct {
 	buf         chan string
 	signal      chan struct{}
@@ -16,6 +20,29 @@ type Writer struct {
 	filepath    string
 	tk          time.Duration
 	tkStop      chan struct{}
+}
+
+func (w *Writer) Clone() *Writer {
+	copy := *w
+	return &copy
+}
+
+func (w *Writer) WithOptions(opts ...WriterOption) *Writer {
+	c := w.Clone()
+	for _, opt := range opts {
+		opt.Apply(c)
+	}
+	return c
+}
+
+type WriterOption interface {
+	Apply(*Writer)
+}
+
+type WriterOptionFunc func(*Writer)
+
+func (f WriterOptionFunc) Apply(w *Writer) {
+	f(w)
 }
 
 // TODO: Writer 的配置项做成Options方式处理
@@ -78,7 +105,7 @@ func (w *Writer) run() {
 				w.f.Close()
 				return
 			}
-			// TODO: 检查json key
+			// TODO: check json repeated key
 			fmt.Println("准备写入文件的日志内容:", b)
 			bm := make(map[string]interface{}, 0)
 			err := json.Unmarshal([]byte(b), &bm)
@@ -87,13 +114,13 @@ func (w *Writer) run() {
 			}
 
 			fmt.Println("准备写入文件的日志内容,json->map:", bm) //TODO: delete
-			bb,err:=json.Marshal(bm)
+			bb, err := json.Marshal(bm)
 			if err != nil {
 				fmt.Println(err)
 			}
 			fmt.Println("当前日志写入的文件名", w.f.Name()) //TODO: delete
 			// w.f.WriteString(b)
-			w.f.WriteString(string(bb)+"\n")
+			w.f.WriteString(string(bb) + "\n")
 		case <-w.signal:
 			w.f.Sync()
 			w.f.Close()

@@ -16,13 +16,21 @@ const (
 
 var defaultLogger *zap.Logger = NewLogger(defaultLevel, defaultProduct, defaultModule, defaultFilePath)
 
+func init()  {
+	defaultLogger.Info("zapper init finished", zap.Bool("success", true),zap.Int("int", 100),zap.String("string", "val string"))
+}
+
 // 初始化函数
 func Zapper(level zapcore.Level, product, module string, outputPath string) {
 	logger := NewLogger(level, product, module, outputPath)
 	SetDefaultLogger(logger)
 }
 
-func Sync() { defaultLogger.Sync() }
+func Sync() { 
+	defaultLogger.Sync() 
+	// TODO: 通知writer 及时停止；
+	defaultWriter.Close()
+}
 
 func SetDefaultLogger(logger *zap.Logger) { defaultLogger = logger }
 
@@ -31,6 +39,8 @@ func NewLogger(level zapcore.Level, product, module string, outputPath string) *
 
 	syncCycle := time.Hour
 	wr := NewWriter(outputPath, syncCycle, 0)
+	SetDefaultWriter(wr)
+
 	syncer := zapcore.AddSync(wr) //ioutil.Discard
 
 	return NewAdvancedLogger(level, product, module, syncer)
