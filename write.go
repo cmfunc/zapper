@@ -1,6 +1,7 @@
 package zapper
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -17,6 +18,7 @@ type Writer struct {
 	tkStop      chan struct{}
 }
 
+// TODO: Writer 的配置项做成Options方式处理
 func NewWriter(file string, tk time.Duration, cacheMax int64) (w *Writer) {
 	// 路径转换（相对路径转绝对路径）
 	if !filepath.IsAbs(file) {
@@ -76,22 +78,36 @@ func (w *Writer) run() {
 				w.f.Close()
 				return
 			}
-			fmt.Println("当前日志写入的文件名",w.f.Name()) //TODO: delete
-			w.f.WriteString(b)
+			// TODO: 检查json key
+			fmt.Println("准备写入文件的日志内容:", b)
+			bm := make(map[string]interface{}, 0)
+			err := json.Unmarshal([]byte(b), &bm)
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			fmt.Println("准备写入文件的日志内容,json->map:", bm) //TODO: delete
+			bb,err:=json.Marshal(bm)
+			if err != nil {
+				fmt.Println(err)
+			}
+			fmt.Println("当前日志写入的文件名", w.f.Name()) //TODO: delete
+			// w.f.WriteString(b)
+			w.f.WriteString(string(bb)+"\n")
 		case <-w.signal:
 			w.f.Sync()
 			w.f.Close()
 			// replace os.File
-			fmt.Println("收到替换信号,当前日志文件:",w.f.Name())
-			fmt.Println("收到替换信号,w.nextTheTime:",w.nextTheTime.Format(time.RFC3339))
+			fmt.Println("收到替换信号,当前日志文件:", w.f.Name())
+			fmt.Println("收到替换信号,w.nextTheTime:", w.nextTheTime.Format(time.RFC3339))
 			newFile := GenLogFilepath(w.filepath, w.nextTheTime)
-			fmt.Println("收到替换信号,newFile生成的文件名:",newFile)
+			fmt.Println("收到替换信号,newFile生成的文件名:", newFile)
 			var err error
 			w.f, err = os.OpenFile(newFile, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
-			if err!=nil{
+			if err != nil {
 				fmt.Println(err)
 			}
-			fmt.Println("收到替换信号,已替换替换的日志文件名:",w.f.Name())
+			fmt.Println("收到替换信号,已替换替换的日志文件名:", w.f.Name())
 		}
 	}
 }
@@ -104,9 +120,9 @@ func (w *Writer) rotate() {
 			return
 		case <-t.C:
 			// change nextTheTime
-			fmt.Println("发送替换日志文件信号时间,NextTheTime前:",w.nextTheTime.Format(time.RFC3339)) // TODO: delete
+			fmt.Println("发送替换日志文件信号时间,NextTheTime前:", w.nextTheTime.Format(time.RFC3339)) // TODO: delete
 			w.nextTheTime = NextTheTime(w.nextTheTime, w.tk)
-			fmt.Println("发送替换日志文件信号时间,NextTheTime后:",w.nextTheTime.Format(time.RFC3339)) // TODO: delete
+			fmt.Println("发送替换日志文件信号时间,NextTheTime后:", w.nextTheTime.Format(time.RFC3339)) // TODO: delete
 			// it's about time to repalce os.File.
 			w.signal <- struct{}{}
 		}

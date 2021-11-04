@@ -27,8 +27,10 @@ func TestNewWriter(t *testing.T) {
 			Error("test cron zaper ",
 				zap.Int("int", 10),
 				zap.Error(errors.New("text string")),
-				zap.String("key string", "val string"),
-				zap.Time("timr", time.Now()),
+				zap.String("msg", "val string1"),
+				zap.String("msg", "val string2"),
+				zap.String("msg", "val string3"),
+				zap.Time("time", time.Now()),
 			)
 
 			time.Sleep(time.Second * 1)
