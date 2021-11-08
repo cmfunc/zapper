@@ -15,6 +15,7 @@ const (
 )
 
 // NextTheTime 根据tk指定的单位，确定t的整点时间
+// tk输入不为时间的整数单位，默认取小时级别
 func NextTheTime(t time.Time, tk time.Duration) time.Time {
 	t = t.Add(tk)
 	switch tk {

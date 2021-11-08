@@ -10,8 +10,18 @@ import (
 
 var defaultWriter *Writer
 
+// SetDefaultWriter
+// 设置包内默认的日志Writer，便于日志Sync()时，对Writer执行收尾工作
 func SetDefaultWriter(w *Writer) { defaultWriter = w }
 
+// Writer 日志输出的实现
+// buf 为写日志的缓冲
+// signal 为切换日志文件的信号
+// f为当前输出文件指针
+// nextTime 保存下一个整点时间
+// filepath 为默认的日志文件命名
+// tk 为整点间隔单位
+// tkSStop 为日志切割停止信号
 type Writer struct {
 	buf         chan string
 	signal      chan struct{}
@@ -22,11 +32,13 @@ type Writer struct {
 	tkStop      chan struct{}
 }
 
+// Clone 复制一个新的Writer
 func (w *Writer) Clone() *Writer {
 	copy := *w
 	return &copy
 }
 
+// WithOptions 对Writer进行可选配置
 func (w *Writer) WithOptions(opts ...WriterOption) *Writer {
 	c := w.Clone()
 	for _, opt := range opts {
@@ -35,16 +47,23 @@ func (w *Writer) WithOptions(opts ...WriterOption) *Writer {
 	return c
 }
 
+// WriterOption Writer的可选配置接口
 type WriterOption interface {
 	Apply(*Writer)
 }
 
+// WriterOption 可选配置方法实例
 type WriterOptionFunc func(*Writer)
 
+// Apply WriterOption可选配置方法实例方法
 func (f WriterOptionFunc) Apply(w *Writer) {
 	f(w)
 }
 
+// NewWriter Writer的工厂方法
+// file 文件名
+// tk 日志切割的间隔整点时间单位
+// cacheMax 缓存的最大值
 // TODO: Writer 的配置项做成Options方式处理
 func NewWriter(file string, tk time.Duration, cacheMax int64) (w *Writer) {
 	// 路径转换（相对路径转绝对路径）
@@ -83,18 +102,23 @@ func NewWriter(file string, tk time.Duration, cacheMax int64) (w *Writer) {
 	return
 }
 
+// Write
+// io.Writer interface的实现
 func (w *Writer) Write(p []byte) (n int, err error) {
 	w.buf <- string(p)
 	// TODO: whether n,err have been used by zap
 	return
 }
 
+// Close Writer的收尾方法
 // 必须在srv.ShutDown()后调用，避免向关闭的通道中发送数据而panic
 func (w *Writer) Close() (err error) {
 	close(w.buf)
 	return
 }
 
+// run Writer的实际处理方法
+// 会对日志切割型号、日志罗盘数据进行处理
 func (w *Writer) run() {
 	for {
 		select {
@@ -139,6 +163,9 @@ func (w *Writer) run() {
 	}
 }
 
+// rotate 
+// 定时发送日志切割信号
+// 监听切割终止信号
 func (w *Writer) rotate() {
 	for {
 		t := time.NewTimer(w.nextTheTime.Sub(time.Now()))

@@ -4,6 +4,9 @@ import (
 	"go.uber.org/zap"
 )
 
+// Debug zapper对外暴露的日志打印方法
+// fields: 为zap自定义的字段类型
+// 不推荐使用zap.Any类型
 func Debug(msg string, fields ...zap.Field) {
 	defaultLogger.Debug(msg, fields...)
 }
