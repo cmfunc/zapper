@@ -23,13 +23,14 @@ func SetDefaultWriter(w *Writer) { defaultWriter = w }
 // tk 为整点间隔单位
 // tkSStop 为日志切割停止信号
 type Writer struct {
-	buf         chan string
-	signal      chan struct{}
-	f           *os.File
-	nextTheTime time.Time
-	filepath    string
-	tk          time.Duration
-	tkStop      chan struct{}
+	buf          chan string   // 日志数据缓冲
+	rotateSignal chan struct{} // 日志切割信号
+	f            *os.File      // 当前落盘日志文件指针
+	nextTheTime  time.Time     // 当前日志所在整点时间
+	filepath     string        // 默认日志文件地址
+	tk           time.Duration // 日志切割间隔整点时间
+	tkStop       chan struct{} // 日志切割停止信号
+	syncFileBuf  chan *os.File // 需要异步关闭的文件指针
 }
 
 // Clone 复制一个新的Writer
@@ -64,19 +65,17 @@ func (f WriterOptionFunc) Apply(w *Writer) {
 // file 文件名
 // tk 日志切割的间隔整点时间单位
 // cacheMax 缓存的最大值
-// TODO: Writer 的配置项做成Options方式处理
+// Writer 的配置项做成Options方式处理
 func NewWriter(file string, tk time.Duration, cacheMax int64) (w *Writer) {
 	// 路径转换（相对路径转绝对路径）
-	if !filepath.IsAbs(file) {
-		var err error
-		file, err = filepath.Abs(file)
-		if err != nil {
-			panic(err)
-		}
+	var err error
+	file, err = filepath.Abs(file) //绝对路径会直接返回绝对路径
+	if err != nil {
+		panic(err)
 	}
 
 	firstTheTime := NextTheTime(time.Now(), tk)
-	firstFile := GenLogFilepath(file, firstTheTime)
+	firstFile := GenLogFilepath(file, firstTheTime, tk)
 	f, err := os.OpenFile(firstFile, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
 	if err != nil {
 		panic(err)
@@ -87,17 +86,19 @@ func NewWriter(file string, tk time.Duration, cacheMax int64) (w *Writer) {
 	}
 
 	w = &Writer{
-		buf:         make(chan string, cacheMax),
-		signal:      make(chan struct{}),
-		f:           f,
-		nextTheTime: firstTheTime,
-		filepath:    file,
-		tk:          tk,
-		tkStop:      make(chan struct{}),
+		buf:          make(chan string, cacheMax),
+		rotateSignal: make(chan struct{}),
+		f:            f,
+		nextTheTime:  firstTheTime,
+		filepath:     file,
+		tk:           tk,
+		tkStop:       make(chan struct{}),
+		syncFileBuf:  make(chan *os.File, 128),
 	}
 
 	go w.run()
 	go w.rotate()
+	go w.syncSync()
 
 	return
 }
@@ -106,7 +107,6 @@ func NewWriter(file string, tk time.Duration, cacheMax int64) (w *Writer) {
 // io.Writer interface的实现
 func (w *Writer) Write(p []byte) (n int, err error) {
 	w.buf <- string(p)
-	// TODO: whether n,err have been used by zap
 	return
 }
 
@@ -125,11 +125,11 @@ func (w *Writer) run() {
 		case b, ok := <-w.buf:
 			if !ok {
 				w.tkStop <- struct{}{}
-				w.f.Sync()
+				w.f.Sync() // TODO: 检查logger.Sync()
 				w.f.Close()
 				return
 			}
-			// TODO: check json repeated key
+			// check json repeated key
 			fmt.Println("准备写入文件的日志内容:", b)
 			bm := make(map[string]interface{}, 0)
 			err := json.Unmarshal([]byte(b), &bm)
@@ -137,33 +137,27 @@ func (w *Writer) run() {
 				fmt.Println(err)
 			}
 
-			fmt.Println("准备写入文件的日志内容,json->map:", bm) //TODO: delete
 			bb, err := json.Marshal(bm)
 			if err != nil {
 				fmt.Println(err)
 			}
-			fmt.Println("当前日志写入的文件名", w.f.Name()) //TODO: delete
 			// w.f.WriteString(b)
 			w.f.WriteString(string(bb) + "\n")
-		case <-w.signal:
-			w.f.Sync()
-			w.f.Close()
+		case <-w.rotateSignal:
+			// 异步化处理文件同步、关闭
+			w.syncFileBuf <- w.f
 			// replace os.File
-			fmt.Println("收到替换信号,当前日志文件:", w.f.Name())
-			fmt.Println("收到替换信号,w.nextTheTime:", w.nextTheTime.Format(time.RFC3339))
-			newFile := GenLogFilepath(w.filepath, w.nextTheTime)
-			fmt.Println("收到替换信号,newFile生成的文件名:", newFile)
+			newFile := GenLogFilepath(w.filepath, w.nextTheTime, w.tk)
 			var err error
 			w.f, err = os.OpenFile(newFile, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
 			if err != nil {
 				fmt.Println(err)
 			}
-			fmt.Println("收到替换信号,已替换替换的日志文件名:", w.f.Name())
 		}
 	}
 }
 
-// rotate 
+// rotate
 // 定时发送日志切割信号
 // 监听切割终止信号
 func (w *Writer) rotate() {
@@ -171,15 +165,27 @@ func (w *Writer) rotate() {
 		t := time.NewTimer(w.nextTheTime.Sub(time.Now()))
 		select {
 		case <-w.tkStop:
+			close(w.syncFileBuf) // 通知异步任务关闭
 			return
 		case <-t.C:
 			// change nextTheTime
-			fmt.Println("发送替换日志文件信号时间,NextTheTime前:", w.nextTheTime.Format(time.RFC3339)) // TODO: delete
 			w.nextTheTime = NextTheTime(w.nextTheTime, w.tk)
-			fmt.Println("发送替换日志文件信号时间,NextTheTime后:", w.nextTheTime.Format(time.RFC3339)) // TODO: delete
 			// it's about time to repalce os.File.
-			w.signal <- struct{}{}
+			w.rotateSignal <- struct{}{}
 		}
 
+	}
+}
+
+func (w *Writer) syncSync() {
+	for {
+		select {
+		case f, ok := <-w.syncFileBuf:
+			if !ok {
+				return
+			}
+			f.Sync()
+			f.Close()
+		}
 	}
 }

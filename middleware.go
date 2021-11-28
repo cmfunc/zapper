@@ -11,6 +11,10 @@ func LogMiddleware(h http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
+		// TODO:
+		// req body
+		// resp body
+		// latency 响应时长
 		newLogger := wrapReqFields(defaultLogger, r)
 
 		r.WithContext(context.WithValue(r.Context(), "logger", newLogger))
@@ -27,6 +31,7 @@ func LogMiddleware(h http.Handler) http.Handler {
 func wrapReqFields(logger *zap.Logger, r *http.Request) *zap.Logger {
 	urlQuery := r.URL.Query()
 	return logger.With(
+		// TODO: 找到字段所在报文位置
 		zap.String("logid", urlQuery.Get("")),
 		zap.String("caller_ip", r.Header.Get("")),
 		zap.String("host_ip", r.Host),

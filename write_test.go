@@ -2,6 +2,7 @@ package zapper
 
 import (
 	"errors"
+	"fmt"
 	"path/filepath"
 	"testing"
 	"time"
@@ -22,11 +23,11 @@ func TestNewWriter(t *testing.T) {
 
 	syncLock := make(chan struct{}, 0)
 	go func() {
-		for i := 0; i <= 65; i++ {
-
+		for i := 0; i <= 240; i++ {
+			err:=errors.New("text string001")
 			Error("test cron zaper ",
 				zap.Int("int", 10),
-				zap.Error(errors.New("text string")),
+				zap.Error(fmt.Errorf("text string: %w",err)),
 				zap.String("msg", "val string1"),
 				zap.String("msg", "val string2"),
 				zap.String("msg", "val string3"),
@@ -51,4 +52,8 @@ func TestAbs(t *testing.T)  {
 		f,e:=filepath.Abs(s)
 		println(f,e)
 	}
+
+	f:="/Users/yymt/Documents/zaper/zapper2021-11-08 17:00:00.log"
+	f2,e:=filepath.Abs(f)
+	t.Log(f2,e)
 }

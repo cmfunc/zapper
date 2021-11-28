@@ -7,20 +7,8 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-// zapper 默认的logger的配置
-const (
-	defaultLevel    = zap.DebugLevel
-	defaultProduct  = "zapper"
-	defaultModule   = "zapper"
-	defaultFilePath = "./zapper.log"
-)
-
 // defaultLogger 默认的日志对象
-var defaultLogger *zap.Logger = NewLogger(defaultLevel, defaultProduct, defaultModule, defaultFilePath)
-
-func init()  {
-	defaultLogger.Info("zapper init finished", zap.Bool("success", true),zap.Int("int", 100),zap.String("string", "val string"))
-}
+var defaultLogger *zap.Logger
 
 // 初始化函数
 // level 日志收集的最低级别
@@ -34,14 +22,14 @@ func Zapper(level zapcore.Level, product, module string, outputPath string) {
 }
 
 // Sync 在服务停止前调用,日志罗盘goroutine生命周期管理的收尾工作
+// 通知writer 及时停止；
 // defer zapper.Sync()
 func Sync() {
-	defaultLogger.Sync() 
-	// TODO: 通知writer 及时停止；
+	defaultLogger.Sync()
 	defaultWriter.Close()
 }
 
-// SetDefaultLogger 
+// SetDefaultLogger
 // logger 用于替换zapper中默认的logger
 func SetDefaultLogger(logger *zap.Logger) { defaultLogger = logger }
 

@@ -6,13 +6,15 @@ import (
 	"log"
 	"net/http"
 	"testing"
+
+	"go.uber.org/zap"
 )
 
 func TestLogMiddleware(t *testing.T) {
-	
 
 	fooHandler := func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("I am ok"))
+		Error("LogMiddleware", zap.String("net/http middleware", "net/http的handler打印"))
+		w.Write([]byte("I'm OK"))
 	}
 
 	http.Handle("/foo", LogMiddleware(http.HandlerFunc(fooHandler)))
